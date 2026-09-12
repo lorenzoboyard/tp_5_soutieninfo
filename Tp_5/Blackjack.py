@@ -74,41 +74,57 @@ def tour_banque(paquet, main_banque):
         tirage_carte(paquet, main_banque)
         score = calculer_score(main_banque)
         print("Main de la banque :", main_banque, "| Score :", score)
-
     if score > 21:
         print("La banque a depasse 21 !")
     else:
         print("La banque s'arrete.")
-
     return score
-def gagnant(main_joueur, main_banque):
+def gagnant(main_joueur, main_banque, mise):
     score_j = calculer_score(main_joueur)
     score_b = calculer_score(main_banque)
-
-    print("\nResutat")
-    print("Joueur :", score_j, "| Banque :", score_b)
-
+    print("\nResultat")
     if score_j > 21:
-        print("Vous avez depasse 21. La banque gagne.")
-    elif score_b > 21:
-        print("La banque a depasse 21 ! Vous gagnez !")
-    elif score_j > score_b:
-        print("Vous gagnez !")
-    elif score_b > score_j:
-        print("La banque gagne.")
+        print("Vous avez depasse 21 ! Vous perdez votre mise.")
+        return 0
+    elif score_b > 21 or score_j > score_b:
+        print("Gagne ! Vous remportez le double de votre mise.")
+        return mise * 2
+    elif score_j == score_b:
+        print("Egalite ! Vous recuperez votre mise.")
+        return mise
     else:
-        print("nul")
+        print("La banque gagne. Vous perdez votre mise.")
+        return 0
 if __name__ == "__main__":
-    paquet = paquet()
-    main_joueur = []
-    main_banque = []
-    tirage_carte(paquet, main_joueur)
-    tirage_carte(paquet, main_joueur)
-    tirage_carte(paquet, main_banque)
-    tirage_carte(paquet, main_banque)
-    print("Start")
-    print("Carte visible de la banque :", main_banque[0])
-    tour_joueur(paquet, main_joueur)
-    if calculer_score(main_joueur) <= 21:
-        tour_banque(paquet, main_banque)
-    gagnant(main_joueur, main_banque)
+    argent = 100
+    while argent > 0:
+        print("\n")
+        print(f"Votre cagnotte actuelle est de : {argent} jetons")
+        saisie_mise = input("Saisissez votre mise pour cette manche : ")
+        if not saisie_mise.isdigit():
+            print("Saisie invalide. Veuillez entrer un nombre entier.")
+            continue
+        mise = int(saisie_mise)
+        if mise <= 0:
+            print("La mise doit être supérieure à 0.")
+            continue
+        if mise > argent:
+            print("Vous ne pouvez pas miser plus que ce que vous possédez.")
+            continue
+        argent -= mise
+        paquet_jeu = paquet()
+        main_joueur = []
+        main_banque = []
+        tirage_carte(paquet_jeu, main_joueur)
+        tirage_carte(paquet_jeu, main_joueur)
+        tirage_carte(paquet_jeu, main_banque)
+        tirage_carte(paquet_jeu, main_banque)
+        print("Carte visible de la banque :", main_banque[0])
+        tour_joueur(paquet_jeu, main_joueur)
+        if calculer_score(main_joueur) <= 21:
+            tour_banque(paquet_jeu, main_banque)
+        gains = gagnant(main_joueur, main_banque, mise)
+        argent += gains
+    print("\nVous n'avez plus de jetons. Fin de la partie !")(main_joueur, main_banque, mise)
+    argent += gains
+    print("\nVous n'avez plus de jetons. Fin de la partie !")
